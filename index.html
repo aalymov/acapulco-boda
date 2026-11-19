@@ -2697,7 +2697,7 @@ html:not(.sn-editing) .ed-hidden{display:none!important}
 <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
 
 <script type="application/json" id="snEditsInline">{"v": 1794886090421, "items": {"1eqaac0": {"src": "img/u/47b67c2b462890e3c5dfb6fb1c79be21.jpg"}, "b4b62y": {"src": "img/u/28e0b6ad65e8b81f3685efad7e568bca.jpg", "mv": {"d": [1, 0], "m": [0, -2]}, "st": {"fx": 93, "fy": 100}, "hide": true}, "1t51j4p": {"st": {"fx": 50, "fy": 100}, "src": "img/u/7aad9e381a997bcad46c02847114016d.jpg"}, "1skd3c9": {"src": "img/u/89ac40adf9acc712b5400673cff44e20.jpg", "st": {"fx": 52, "fy": 84}}, "skseo": {"es": "Viaje"}, "zlzlqd": {"es": "Pie de la cuesta, Acapulco"}, "1mjsazb": {"es": ""}, "bckvqo7": {"hide": true}, "b13kgocd": {"hide": true}, "b17dzpq7": {"hide": true}, "4yrp4v": {"es": "2027 · Acapulco, México"}}, "blocks": [], "moved": {}}</script>
-<script>var SN_SRC = ''; window.SN_SRC_V = 'f9afff0b59';</script>
+<script>var SN_SRC = ''; window.SN_SRC_V = '5f0cc3607b';</script>
 <script>
 /* site editor: give every static text and photo a stable key before any script changes the page */
 (function(){
@@ -8676,24 +8676,27 @@ html:not(.sn-editing) .ed-hidden{display:none!important}
     if (NX_OPENS === null){ c.appendChild(el('p', 'hint', A('Сайт пока не знает, кто открывал свою ссылку: обновите код Apps Script до новой версии и создайте новое развёртывание (как в прошлый раз).', 'El sitio aún no sabe quién abrió su enlace: actualiza el código de Apps Script y crea una nueva implementación.'))); b.appendChild(c); return c; }
     if (!NX_OPENS){ c.appendChild(el('p', 'hint', A('Загружаю…', 'Cargando…'))); b.appendChild(c); return c; }
     var adults = Object.keys(people).filter(function(id){ return !people[id].child; });
-    var op = adults.filter(nxOpened), sent = adults.filter(function(id){ return lastSent(id, 'invite'); });
-    var notOp = sent.filter(function(id){ return !nxOpened(id); });
+    var op = adults.filter(nxOpened), notAll = adults.filter(function(id){ return !nxOpened(id); });
+    var notOp = notAll.filter(function(id){ return lastSent(id, 'invite'); });
     var opNoAns = households.filter(function(h){ return gMembers(h).length && nxHhOpened(h) && groupStatus(h) === 'none'; });
-    kv(c, A('Открыли сайт', 'Abrieron el sitio'), BI(op.length + ' из ' + adults.length, op.length + ' de ' + adults.length));
-    kv(c, A('Получили приглашение, но не открывали', 'Recibieron la invitación y no la abrieron'), notOp.length);
-    kv(c, A('Открыли, но ещё не ответили', 'La abrieron y no han respondido'), opNoAns.length);
-    if (opNoAns.length){
-      c.appendChild(el('p', 'nx-lbl', A('Открыли, но не ответили', 'Abrieron y no respondieron')));
-      var w = el('div', 'nx-plinks'); opNoAns.forEach(function(h){ w.appendChild(nxHLink(h)); }); c.appendChild(w);
-      c.appendChild(btn(A('Напомнить им', 'Recordarles'), 'pill small', function(){ MC.mode = 'group'; MC.gsel = {}; opNoAns.forEach(function(h){ MC.gsel[h.id] = 1; }); MC.st = 'all'; MC.nxNot = false; setTpl('reminder'); MC.pv = null; goTab('msg'); }));
+    /* every row opens its list of names; a row with nobody says so */
+    function row(ru, es, n, fill, hintRu, hintEs){
+      var d = el('details', 'nx-orow' + (n ? '' : ' empty'));
+      var sm = el('summary'); sm.appendChild(el('span', null, A(ru, es))); sm.appendChild(el('b', null, typeof n === 'number' ? String(n) : n)); d.appendChild(sm);
+      var w = el('div', 'nx-obody');
+      if (typeof n === 'number' ? n : 1) fill(w); else w.appendChild(el('p', 'hint', A(hintRu, hintEs)));
+      d.appendChild(w); c.appendChild(d); return d;
     }
-    nxWhoDet(c, 'Не открывали', 'No la abrieron', notOp);
-    var recent = op.slice().sort(function(a, z){ return NX_OPENS[z][1] - NX_OPENS[a][1]; }).slice(0, 8);
-    if (recent.length){
-      var d = el('details', 'nx-adet'); d.appendChild(el('summary', null, A('Последние входы', 'Últimas visitas')));
-      recent.forEach(function(id){ var r = el('div', 'nx-recent'); r.appendChild(nxPLink(id)); r.appendChild(el('span', 'hint', nxWhenFull(NX_OPENS[id][1], LANG === 'es'))); d.appendChild(r); });
-      c.appendChild(d);
-    }
+    row('Открыли сайт', 'Abrieron el sitio', BI(op.length + ' из ' + adults.length, op.length + ' de ' + adults.length), function(w){
+      if (!op.length){ w.appendChild(el('p', 'hint', A('Пока никто. Входы считаются с момента обновления Apps Script; ваши собственные заходы не считаются.', 'Nadie todavía. Las visitas se cuentan desde que se actualizó el Apps Script; tus propias visitas no cuentan.'))); return; }
+      op.slice().sort(function(a, z){ return NX_OPENS[z][1] - NX_OPENS[a][1]; }).forEach(function(id){ var r = el('div', 'nx-recent'); r.appendChild(nxPLink(id)); r.appendChild(el('span', 'hint', nxWhenFull(NX_OPENS[id][1], LANG === 'es') + (NX_OPENS[id][2] > 1 ? ' · ' + NX_OPENS[id][2] + '×' : ''))); w.appendChild(r); });
+    });
+    row('Открыли, но ещё не ответили', 'La abrieron y no han respondido', opNoAns.length, function(w){
+      var pl = el('div', 'nx-plinks'); opNoAns.forEach(function(h){ pl.appendChild(nxHLink(h)); }); w.appendChild(pl);
+      w.appendChild(btn(A('Напомнить им', 'Recordarles'), 'pill small', function(){ MC.mode = 'group'; MC.gsel = {}; opNoAns.forEach(function(h){ MC.gsel[h.id] = 1; }); MC.st = 'all'; MC.nxNot = false; setTpl('reminder'); MC.pv = null; goTab('msg'); }));
+    }, 'Пока никого.', 'Nadie todavía.');
+    row('Ещё не открывали сайт', 'Aún no abren el sitio', notAll.length, function(w){ var pl = el('div', 'nx-plinks'); notAll.forEach(function(id){ pl.appendChild(nxPLink(id)); }); w.appendChild(pl); }, 'Все уже заходили.', 'Todos ya entraron.');
+    row('Получили приглашение, но не открывали', 'Recibieron la invitación y no la abrieron', notOp.length, function(w){ var pl = el('div', 'nx-plinks'); notOp.forEach(function(id){ pl.appendChild(nxPLink(id)); }); w.appendChild(pl); }, 'Пока никого. Здесь будут гости, которым приглашение отправлено через «Сообщения», но они ещё не открыли ссылку.', 'Nadie todavía. Aquí aparecerán quienes recibieron la invitación por «Mensajes» y aún no abren su enlace.');
     b.appendChild(c); return c;
   }
 
@@ -8787,8 +8790,8 @@ html:not(.sn-editing) .ed-hidden{display:none!important}
     if (Math.abs(window.scrollY - keepY) > 0.5) window.scrollTo(0, keepY);
   }
   /* ================= site editor: edit any text or photo, then publish the page for everyone ================= */
-  function edFix(j){ var hz = j && j.items && j.items.skseo; if (hz && hz.es === 'Viaje' && !(j.v > 1795127027881)){ delete hz.es; if (!Object.keys(hz).length) delete j.items.skseo; }
-    var x = j && j.items && j.items.b4b62y; if (x && x.hide && !(j.v > 1795127027730)) delete x.hide; }
+  function edFix(j){ var hz = j && j.items && j.items.skseo; if (hz && hz.es === 'Viaje' && !(j.v > 1795128006972)){ delete hz.es; if (!Object.keys(hz).length) delete j.items.skseo; }
+    var x = j && j.items && j.items.b4b62y; if (x && x.hide && !(j.v > 1795128006823)) delete x.hide; }
   var ED = (function(){ var j = null; try { j = JSON.parse($('snEditsInline').textContent); } catch(e){} j = j && j.items ? j : {v:0, items:{}}; try { var jc = JSON.parse(localStorage.getItem('sn-srv-edits') || 'null'); if (jc && jc.items && jc.v > j.v) j = jc; } catch(e){} if (nxIsAdminDev()) try { var jf = JSON.parse(localStorage.getItem('sn-srv-edits-full') || 'null'); if (jf && jf.items && jf.v >= j.v) j = jf; } catch(e){} NX_EB = j; j = nxEdView(j); j.blocks = j.blocks || []; j.moved = j.moved || {}; edFix(j); return j; })();
   function edState(){ return JSON.stringify({i: ED.items, b: ED.blocks, m: ED.moved, al: ED.album || {}}); }
   function edSetState(x){ var o = typeof x === 'string' ? JSON.parse(x) : x; ED.items = o.i || {}; ED.blocks = o.b || []; ED.moved = o.m || {}; ED.album = o.al || {}; }
@@ -10269,6 +10272,14 @@ html.sn-editing [data-route="about"] .lives,html.sn-editing [data-route="about"]
 .nx-opened.no{background:rgba(224,122,95,.1)}
 .nx-recent{display:flex;justify-content:space-between;gap:10px;align-items:baseline;padding:4px 0}
 .nx-opens .nx-plinks{margin:4px 0 10px}
+.nx-orow{border-bottom:1px dashed var(--line)}
+.nx-orow summary{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 0;cursor:pointer;list-style:none;font-size:15px}
+.nx-orow summary::-webkit-details-marker{display:none}
+.nx-orow summary span{display:flex;align-items:center;gap:8px}
+.nx-orow summary span::before{content:"";width:7px;height:7px;border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;transform:rotate(-45deg);transition:transform .2s;opacity:.6}
+.nx-orow[open] summary span::before{transform:rotate(45deg)}
+.nx-orow summary:hover span{text-decoration:underline;text-underline-offset:3px}
+.nx-obody{padding:0 0 12px 15px}
 </style>
 
 </body></html>
