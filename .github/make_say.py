@@ -38,7 +38,11 @@ for lang, paths in VOICES.items():
                     voice.synthesize(t, w, length_scale=1.15)
             mp3 = 'out/audio/%s-%02d.mp3' % (name, i)
             subprocess.run(['ffmpeg', '-loglevel', 'error', '-y', '-i', wav, '-af', 'apad=pad_dur=0.15', '-ac', '1', '-ar', '22050', '-b:a', '48k', mp3], check=True)
-            segs, _ = asr.transcribe(wav, language=lang, beam_size=5)
+            w16 = wav.replace('.wav', '-16k.wav')
+            subprocess.run(['ffmpeg', '-loglevel', 'error', '-y', '-i', wav, '-ac', '1', '-ar', '16000', '-acodec', 'pcm_s16le', w16], check=True)
+            import numpy as np
+            with wave.open(w16) as w: pcm = np.frombuffer(w.readframes(w.getnframes()), dtype=np.int16).astype(np.float32) / 32768.0
+            segs, _ = asr.transcribe(pcm, language=lang, beam_size=5)
             heard = ' '.join(s.text for s in segs).strip()
             ok = norm(heard) == norm(t)
             with wave.open(wav) as w: dur = w.getnframes() / w.getframerate()
