@@ -8,7 +8,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with: {sparse-checkout: .github}
-      - run: python3 .github/find_photos.py
+      - run: pip install -q pillow && python3 .github/find_photos.py
       - run: |
           cd out && git init -q && git add -A && git -c user.name=bot -c user.email=bot@example.com commit -q -m photos
           git push -q -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" HEAD:refs/heads/snapshot-tmp
