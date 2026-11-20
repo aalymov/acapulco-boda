@@ -2697,7 +2697,7 @@ html:not(.sn-editing) .ed-hidden{display:none!important}
 <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
 
 <script type="application/json" id="snEditsInline">{"v": 1794886090421, "items": {"1eqaac0": {"src": "img/u/47b67c2b462890e3c5dfb6fb1c79be21.jpg"}, "b4b62y": {"src": "img/u/28e0b6ad65e8b81f3685efad7e568bca.jpg", "mv": {"d": [1, 0], "m": [0, -2]}, "st": {"fx": 93, "fy": 100}, "hide": true}, "1t51j4p": {"st": {"fx": 50, "fy": 100}, "src": "img/u/7aad9e381a997bcad46c02847114016d.jpg"}, "1skd3c9": {"src": "img/u/89ac40adf9acc712b5400673cff44e20.jpg", "st": {"fx": 52, "fy": 84}}, "skseo": {"es": "Viaje"}, "zlzlqd": {"es": "Pie de la cuesta, Acapulco"}, "1mjsazb": {"es": ""}, "bckvqo7": {"hide": true}, "b13kgocd": {"hide": true}, "b17dzpq7": {"hide": true}, "4yrp4v": {"es": "2027 · Acapulco, México"}}, "blocks": [], "moved": {}}</script>
-<script>var SN_SRC = ''; window.SN_SRC_V = '17f8aa03be';</script>
+<script>var SN_SRC = ''; window.SN_SRC_V = '7440a0b592';</script>
 <script>
 /* site editor: give every static text and photo a stable key before any script changes the page */
 (function(){
@@ -6474,7 +6474,7 @@ html:not(.sn-editing) .ed-hidden{display:none!important}
     }
     var fr = nxLines(h.fru), fe = nxLines(h.fes);
     if (fr.length || fe.length){
-      art.appendChild(el('h3', 'nx-sub', A('Что здесь есть', 'Qué hay aquí')));
+      art.appendChild(el('h3', 'nx-sub', A('Что здесь есть', 'Qué incluye')));
       var ul = el('ul', 'nx-feats'); var n = Math.max(fr.length, fe.length);
       for (var i = 0; i < n; i++) ul.appendChild(el('li', null, BI(fr[i] || fe[i], fe[i] || fr[i])));
       art.appendChild(ul);
@@ -8944,8 +8944,8 @@ html:not(.sn-editing) .ed-hidden{display:none!important}
     if (Math.abs(window.scrollY - keepY) > 0.5) window.scrollTo(0, keepY);
   }
   /* ================= site editor: edit any text or photo, then publish the page for everyone ================= */
-  function edFix(j){ var hz = j && j.items && j.items.skseo; if (hz && hz.es === 'Viaje' && !(j.v > 1795141336252)){ delete hz.es; if (!Object.keys(hz).length) delete j.items.skseo; }
-    var x = j && j.items && j.items.b4b62y; if (x && x.hide && !(j.v > 1795141336139)) delete x.hide; }
+  function edFix(j){ var hz = j && j.items && j.items.skseo; if (hz && hz.es === 'Viaje' && !(j.v > 1795144987136)){ delete hz.es; if (!Object.keys(hz).length) delete j.items.skseo; }
+    var x = j && j.items && j.items.b4b62y; if (x && x.hide && !(j.v > 1795144987027)) delete x.hide; }
   var ED = (function(){ var j = null; try { j = JSON.parse($('snEditsInline').textContent); } catch(e){} j = j && j.items ? j : {v:0, items:{}}; try { var jc = JSON.parse(localStorage.getItem('sn-srv-edits') || 'null'); if (jc && jc.items && jc.v > j.v) j = jc; } catch(e){} if (nxIsAdminDev()) try { var jf = JSON.parse(localStorage.getItem('sn-srv-edits-full') || 'null'); if (jf && jf.items && jf.v >= j.v) j = jf; } catch(e){} NX_EB = j; j = nxEdView(j); j.blocks = j.blocks || []; j.moved = j.moved || {}; edFix(j); return j; })();
   function edState(){ return JSON.stringify({i: ED.items, b: ED.blocks, m: ED.moved, al: ED.album || {}}); }
   function edSetState(x){ var o = typeof x === 'string' ? JSON.parse(x) : x; ED.items = o.i || {}; ED.blocks = o.b || []; ED.moved = o.m || {}; ED.album = o.al || {}; }
