@@ -1,44 +1,41 @@
-import os, json, wave, subprocess, re, unicodedata, asyncio
-import numpy as np
-PH = {
- 'es': ['¡Hola! ¿Cómo estás?', 'Mucho gusto.', '¡Salud!', '¡Que vivan los novios!', '¿Bailamos?', '¡Está delicioso!', 'Gracias.'],
- 'ru': ['Привет! Как дела?', 'Очень приятно.', 'За молодых!', 'Горько!', 'Потанцуем?', 'Очень вкусно!', 'Спасибо.'],
-}
-VOICES = {'es': ['es-MX-DaliaNeural', 'es-MX-JorgeNeural'], 'ru': ['ru-RU-SvetlanaNeural', 'ru-RU-DmitryNeural']}
-os.makedirs('out/audio', exist_ok=True); os.makedirs('w', exist_ok=True)
-import edge_tts
-from faster_whisper import WhisperModel
-import librosa
-asr = WhisperModel('medium', device='cpu', compute_type='int8')
-def norm(s):
-    s = unicodedata.normalize('NFD', s.lower()); s = ''.join(c for c in s if unicodedata.category(c) != 'Mn')
-    return re.sub(r'[^a-zа-яё ]', '', s.replace('ё', 'е')).split()
-def pitch(path):
+import os, json, subprocess, asyncio
+import numpy as np, librosa, edge_tts
+os.makedirs('out', exist_ok=True); os.makedirs('w', exist_ok=True)
+PAIRS = [
+ ('es-MX-DaliaNeural', '¿Bailamos?', 'Bailamos.'),
+ ('es-MX-DaliaNeural', '¿Cómo estás?', 'Cómo estás.'),
+ ('es-MX-DaliaNeural', '¡Hola! ¿Cómo estás?', 'Hola. Cómo estás.'),
+ ('ru-RU-SvetlanaNeural', 'Потанцуем?', 'Потанцуем.'),
+ ('ru-RU-SvetlanaNeural', 'Как дела?', 'Как дела.'),
+ ('ru-RU-SvetlanaNeural', 'Привет! Как дела?', 'Привет. Как дела.'),
+]
+async def synth(text, voice, path): await edge_tts.Communicate(text, voice, rate='-12%').save(path)
+def f0(path):
     y, sr = librosa.load(path, sr=16000)
-    f0, vf, _ = librosa.pyin(y, fmin=70, fmax=450, sr=sr, frame_length=1024)
-    f = f0[~np.isnan(f0)]
-    if len(f) < 6: return None
-    st = 12 * np.log2(f / np.median(f))
-    n = len(st); tail = st[int(n * 0.7):]; mid = st[int(n * 0.35):int(n * 0.7)]
-    return {'end_vs_mid_st': round(float(np.mean(tail[-max(2, len(tail)//2):]) - np.mean(mid)), 1), 'last_st': round(float(np.mean(st[-3:])), 1), 'range_st': round(float(st.max() - st.min()), 1)}
-async def synth(text, voice, path):
-    await edge_tts.Communicate(text, voice, rate='-12%').save(path)
-report = {}
-for lang, voices in VOICES.items():
-    for voice in voices:
-        res = []
-        for i, t in enumerate(PH[lang]):
-            raw = 'w/%s-%d.mp3' % (voice, i)
-            asyncio.run(synth(t, voice, raw))
-            w16 = raw.replace('.mp3', '.wav')
-            subprocess.run(['ffmpeg', '-loglevel', 'error', '-y', '-i', raw, '-ac', '1', '-ar', '16000', '-acodec', 'pcm_s16le', w16], check=True)
-            mp3 = 'out/audio/%s-%02d.mp3' % (voice, i)
-            # trim silence at both ends, keep a short pad, normalize loudness
-            subprocess.run(['ffmpeg', '-loglevel', 'error', '-y', '-i', raw, '-af', 'silenceremove=start_periods=1:start_threshold=-45dB:start_silence=0.05,areverse,silenceremove=start_periods=1:start_threshold=-45dB:start_silence=0.12,areverse,loudnorm=I=-16:TP=-1.5', '-ac', '1', '-ar', '24000', '-b:a', '48k', mp3], check=True)
-            with wave.open(w16) as w: pcm = np.frombuffer(w.readframes(w.getnframes()), dtype=np.int16).astype(np.float32) / 32768.0
-            segs, _ = asr.transcribe(pcm, language=lang, beam_size=5)
-            heard = ' '.join(s.text for s in segs).strip()
-            res.append({'i': i, 'text': t, 'heard': heard, 'ok': norm(heard) == norm(t), 'pitch': pitch(w16), 'kb': round(os.path.getsize(mp3) / 1024, 1)})
-            print(voice, i, 'OK ' if res[-1]['ok'] else 'BAD', t, '->', heard, res[-1]['pitch'])
-        report[voice] = res
-json.dump(report, open('out/report.json', 'w'), ensure_ascii=False, indent=1)
+    f, vf, vp = librosa.pyin(y, fmin=140, fmax=480, sr=sr, frame_length=1024, hop_length=160)
+    t = np.arange(len(f)) * 160 / sr
+    ok = ~np.isnan(f) & (vp > 0.5)
+    return t[ok], 12 * np.log2(f[ok] / 100.0), len(y) / sr
+def onset(path):
+    y, sr = librosa.load(path, sr=16000)
+    e = librosa.feature.rms(y=y, frame_length=320, hop_length=160)[0]
+    i = int(np.argmax(e > e.max() * 0.08)); seg = y[i * 160: i * 160 + 1600]
+    zcr = float(np.mean(librosa.feature.zero_crossing_rate(seg, frame_length=320, hop_length=160)))
+    return round(zcr, 3)
+rep = []
+for k, (voice, q, s) in enumerate(PAIRS):
+    row = {'voice': voice, 'q': q, 's': s}
+    for tag, text in (('q', q), ('s', s)):
+        p = 'w/%d-%s.mp3' % (k, tag); asyncio.run(synth(text, voice, p))
+        t, st, dur = f0(p)
+        last = st[t > t.max() - 0.25] if len(t) else []
+        row[tag] = {'dur': round(dur, 2), 'end_st': round(float(np.median(last)), 1) if len(last) else None, 'max_last_half_st': round(float(st[t > t.max() / 2].max()), 1) if len(t) else None, 'median_st': round(float(np.median(st)), 1) if len(t) else None,
+                    'contour': [round(float(np.median(st[(t >= t.max() * j / 10) & (t < t.max() * (j + 1) / 10)])), 1) if np.any((t >= t.max() * j / 10) & (t < t.max() * (j + 1) / 10)) else None for j in range(10)]}
+        subprocess.run(['cp', p, 'out/%d-%s.mp3' % (k, tag)])
+    rep.append(row); print(json.dumps(row, ensure_ascii=False))
+# the start of "¡Hola!" in the chosen voice: a clean vowel start has a low zero-crossing rate, a "t/k" burst a high one
+for voice in ('es-MX-DaliaNeural',):
+    p = 'w/hola.mp3'; asyncio.run(synth('¡Hola! ¿Cómo estás?', voice, p)); rep.append({'hola_onset_zcr': onset(p)})
+    p = 'w/tola.mp3'; asyncio.run(synth('¡Tola! ¿Cómo estás?', voice, p)); rep.append({'tola_onset_zcr': onset(p)})
+print(rep[-2:])
+json.dump(rep, open('out/report.json', 'w'), ensure_ascii=False, indent=1)
