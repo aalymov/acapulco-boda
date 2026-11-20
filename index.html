@@ -1784,7 +1784,7 @@ html:not(.sn-editing) .ed-hidden{display:none!important}
         <li><b>Время</b>По Акапулько (UTC−6)</li>
         <li><b>Важно</b>Церемония на песке: лучше без шпилек</li>
       </ul>
-      <div id="nxProg" data-adm="Программа" data-adm-es="Programa"></div>
+      <div id="nxProg" data-own-edit></div>
       <div class="nx-legacy" hidden data-noedit>
       <div class="daytabs" role="tablist" aria-label="Дни праздника">
         <button type="button" role="tab" class="daytab" id="dt-16" aria-controls="dp-16" aria-selected="true" data-cats="main"><span>Пт</span><b>16</b><i>Вечеринка-встреча</i></button>
@@ -2697,7 +2697,7 @@ html:not(.sn-editing) .ed-hidden{display:none!important}
 <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
 
 <script type="application/json" id="snEditsInline">{"v": 1794886090421, "items": {"1eqaac0": {"src": "img/u/47b67c2b462890e3c5dfb6fb1c79be21.jpg"}, "b4b62y": {"src": "img/u/28e0b6ad65e8b81f3685efad7e568bca.jpg", "mv": {"d": [1, 0], "m": [0, -2]}, "st": {"fx": 93, "fy": 100}, "hide": true}, "1t51j4p": {"st": {"fx": 50, "fy": 100}, "src": "img/u/7aad9e381a997bcad46c02847114016d.jpg"}, "1skd3c9": {"src": "img/u/89ac40adf9acc712b5400673cff44e20.jpg", "st": {"fx": 52, "fy": 84}}, "skseo": {"es": "Viaje"}, "zlzlqd": {"es": "Pie de la cuesta, Acapulco"}, "1mjsazb": {"es": ""}, "bckvqo7": {"hide": true}, "b13kgocd": {"hide": true}, "b17dzpq7": {"hide": true}, "4yrp4v": {"es": "2027 · Acapulco, México"}}, "blocks": [], "moved": {}}</script>
-<script>var SN_SRC = ''; window.SN_SRC_V = '5f0cc3607b';</script>
+<script>var SN_SRC = ''; window.SN_SRC_V = '617a92480e';</script>
 <script>
 /* site editor: give every static text and photo a stable key before any script changes the page */
 (function(){
@@ -8739,6 +8739,135 @@ html:not(.sn-editing) .ed-hidden{display:none!important}
   };
   var _nxOv55 = aOverview; aOverview = function(b){ _nxOv55(b); var c = nxOpensCard(b); var st = b.querySelector('.stats'); var anchor = st ? st.nextSibling : b.firstChild; if (c && anchor) b.insertBefore(c, anchor); };
   var _nxRD55 = renderDrawer; renderDrawer = function(){ var r0 = _nxRD55.apply(this, arguments); if (dMode !== 'group' && !dNew && people[dId]){ var ln = nxOpensLine(dId); var body = $('drawerBody'); if (ln && body) body.insertBefore(ln, body.firstChild); } else if (dMode === 'group' && typeof gId !== 'undefined' && hh(gId)){ var lg = nxOpensFam(hh(gId)); var bd = $('drawerBody'); if (lg && bd) bd.insertBefore(lg, bd.firstChild); } return r0; };
+  /* ================= v56: «Программа» is edited right on the page (texts in both languages, times, places, photos, days) ================= */
+  function nxPeOn(){ return typeof edOn !== 'undefined' && edOn && !ED_CHILD; }
+  var nxPeT = 0;
+  function nxPeSave(){ clearTimeout(nxPeT); nxPeT = setTimeout(function(){ save(); nxPagesSoon(); }, 500); }
+  /* «1830», «18.30», «18 30», «9» → «18:30», «09:00» */
+  function nxPeHm(v){ var d = String(v || '').replace(/\D/g, ''); if (!d) return ''; if (d.length <= 2){ var h = Math.min(23, +d); return (h < 10 ? '0' : '') + h + ':00'; } d = d.slice(0, 4); var hh = Math.min(23, +d.slice(0, d.length - 2)), mm = Math.min(59, +d.slice(-2)); return (hh < 10 ? '0' : '') + hh + ':' + (mm < 10 ? '0' : '') + mm; }
+  function nxPeDay(id){ return nxProgEdit().filter(function(d){ return d.id === id; })[0]; }
+  function nxPeItem(did, iid){ var d = nxPeDay(did); return d ? d.items.filter(function(it){ return it.id === iid; })[0] : null; }
+  function nxPeRedo(){ save(); nxPePend = true; setTimeout(nxPeTry, 0); nxPagesSoon(); }
+  /* the page is redrawn only when nothing inside it is being typed in, so a click from one field to the next is never lost */
+  var nxPePend = false;
+  function nxPeBusy(){ var box = $('nxProg'), a = document.activeElement; return !!(box && a && box.contains(a) && a.matches && a.matches('.nx-pe-t,input,select,textarea')); }
+  function nxPeTry(){ if (!nxPePend) return; if (nxPeOn() && nxPeBusy()) return; nxPePend = false; renderProgram(); }
+  document.addEventListener('focusout', function(e){ if (nxPePend && e.target.closest && e.target.closest('#nxProg')) setTimeout(nxPeTry, 0); });
+  /* one editable text: the current language, and a small line for the other one */
+  function nxPeField(get, k, phRu, phEs, tag, cls, multi){
+    var w = el('span', 'nx-pe-pair' + (cls ? ' ' + cls : '')), es = LANG === 'es';
+    [[es ? 'es' : 'ru', ''], [es ? 'ru' : 'es', 'nx-pe-alt']].forEach(function(x){
+      var lang = x[0], f = el(x[1] ? 'span' : (tag || 'span'), 'nx-pe-t ' + x[1]);
+      f.setAttribute('data-notr', ''); f.setAttribute('lang', lang); f.setAttribute('role', 'textbox'); f.spellcheck = true;
+      try { f.contentEditable = 'plaintext-only'; } catch(e){ f.contentEditable = 'true'; }
+      if (f.contentEditable !== 'plaintext-only') f.contentEditable = 'true';
+      var o = get(); f.textContent = (o && o[k + lang]) || '';
+      f.setAttribute('data-ph', lang === 'es' ? phEs : phRu);
+      if (x[1]) f.setAttribute('data-lab', lang === 'es' ? 'ES' : 'RU');
+      f.setAttribute('aria-label', (lang === 'es' ? 'Español: ' : 'Русский: ') + (lang === 'es' ? phEs : phRu));
+      f.addEventListener('input', function(){ var o2 = get(); if (!o2) return; o2[k + lang] = f.textContent.replace(/ /g, ' ').trim(); nxPeSave(); });
+      f.addEventListener('keydown', function(e){ if (e.key === 'Enter' && !(multi && e.shiftKey)){ e.preventDefault(); f.blur(); } });
+      f.addEventListener('paste', function(e){ e.preventDefault(); e.stopPropagation(); var t = (e.clipboardData || window.clipboardData).getData('text/plain').replace(/\s*\n\s*/g, ' '); document.execCommand('insertText', false, t); });
+      w.appendChild(f);
+    });
+    return w;
+  }
+  function nxPeConfirm(b, ru, es, go){
+    b.addEventListener('click', function(){ if (!b.dataset.sure){ b.dataset.sure = '1'; setBi(b, ru, es); setTimeout(function(){ if (b.isConnected){ delete b.dataset.sure; } }, 4000); return; } go(); });
+    return b;
+  }
+  function renderProgramEd(){
+    var box = $('nxProg'); if (!box) return;
+    if (nxActsNode) NX_ACTS_HOME.appendChild(nxActsNode);
+    box.textContent = '';
+    var all = nxProg();
+    var wrap = el('div', 'nx-pe');
+    var note = el('div', 'nx-pe-note ed-ui');
+    note.appendChild(el('b', null, A('Программа редактируется прямо здесь', 'El programa se edita aquí mismo')));
+    note.appendChild(el('span', null, A('Нажмите на любой текст и пишите. Под каждой строкой — та же строка на втором языке. Всё сохраняется само как черновик; гости увидят изменения после «Опубликовать страницу».', 'Toca cualquier texto y escribe. Debajo de cada línea está la misma línea en el otro idioma. Todo se guarda solo como borrador; los invitados verán los cambios al pulsar «Publicar página».')));
+    wrap.appendChild(note);
+    if (!all.length){ nxDaySel = null; }
+    if (!nxDaySel || !all.some(function(d){ return d.id === nxDaySel; })) nxDaySel = (all.filter(function(d){ return d.date === '2027-04-17'; })[0] || all[0] || {}).id;
+    var tabs = el('div', 'daytabs nx-daytabs nx-pe-tabs'); tabs.setAttribute('role', 'tablist');
+    all.forEach(function(d){
+      var t = el('button', 'daytab'); t.type = 'button'; t.setAttribute('role', 'tab'); t.setAttribute('aria-selected', String(d.id === nxDaySel));
+      t.appendChild(el('span', null, BI(nxWd(d.date), nxWd(d.date, true)))); t.appendChild(el('b', null, String(+String(d.date || '').slice(8) || '?'))); t.appendChild(el('i', null, nxBi(d, '')));
+      if (d.cats === 'main') t.appendChild(el('small', 'nx-pe-only', A('гости на 3 дня', 'invitados de 3 días')));
+      t.addEventListener('click', function(){ nxDaySel = d.id; renderProgram(); });
+      tabs.appendChild(t);
+    });
+    var addD = el('button', 'daytab nx-pe-add'); addD.type = 'button';
+    addD.appendChild(el('b', null, '+')); addD.appendChild(el('i', null, A('День', 'Día')));
+    addD.addEventListener('click', function(){ var last = all[all.length - 1], dt = '2027-04-17'; if (last && last.date){ var x = new Date(last.date + 'T12:00:00'); x.setDate(x.getDate() + 1); dt = x.toISOString().slice(0, 10); } var nd = {id:nxId('d'), date:dt, cats:'all', ru:'', es:'', nru:'', nes:'', img:'img/sea.jpg', items:[]}; nxProgEdit().push(nd); nxDaySel = nd.id; nxPeRedo(); });
+    tabs.appendChild(addD);
+    wrap.appendChild(tabs);
+
+    all.filter(function(d){ return d.id === nxDaySel; }).forEach(function(d0){
+      var did = d0.id, D = function(){ return nxPeDay(did); };
+      var p = el('div', 'dpanel nx-dpanel nx-pe-panel');
+      var fg = el('figure', 'dbanner'); fg.appendChild(nxImg(d0.img || 'img/sand.jpg', ''));
+      var ph = el('div', 'nx-pe-photo ed-ui'); ph.appendChild(nxFileBtn(A('Сменить фото дня', 'Cambiar la foto del día'), function(v){ if (!v) return; var d = D(); if (d){ d.img = v; nxPeRedo(); } }, 2000)); fg.appendChild(ph);
+      var fc = el('figcaption');
+      var dIn = el('input', 'nx-pe-date'); dIn.type = 'date'; dIn.value = d0.date || ''; dIn.setAttribute('data-notr', ''); dIn.setAttribute('aria-label', L('Дата дня', 'Fecha del día'));
+      var dCh = false;
+      dIn.addEventListener('change', function(){ var d = D(); if (d && dIn.value){ d.date = dIn.value; dCh = true; save(); } });
+      dIn.addEventListener('blur', function(){ if (dCh){ dCh = false; nxPeRedo(); } });
+      fc.appendChild(dIn);
+      fc.appendChild(nxPeField(D, '', 'Название дня', 'Nombre del día', 'b', 'nx-pe-day'));
+      fg.appendChild(fc); p.appendChild(fg);
+
+      var meta = el('div', 'nx-pe-meta ed-ui');
+      meta.appendChild(el('span', null, A('Кто видит этот день:', 'Quién ve este día:')));
+      meta.appendChild(sel(NX_CATS_OPT, d0.cats || 'all', function(v){ var d = D(); if (d){ d.cats = v; nxPeRedo(); } }));
+      meta.appendChild(nxPeConfirm(btn(A('Удалить день', 'Eliminar el día'), 'linkbtn danger'), 'Точно удалить весь день? Нажмите ещё раз', '¿Eliminar todo el día? Pulsa otra vez', function(){ var a = nxProgEdit(), d = D(); if (d) a.splice(a.indexOf(d), 1); nxDaySel = null; nxPeRedo(); }));
+      p.appendChild(meta);
+
+      var ol = el('ol', 'tl nx-tl nx-pe-tl');
+      var items = d0.items.slice().sort(function(a, b){ var x = nxTime(a), y = nxTime(b); return !x || !y ? 0 : (x < y ? -1 : x > y ? 1 : 0); });
+      items.forEach(function(it0){
+        var iid = it0.id || (it0.id = nxId('i')), I = function(){ return nxPeItem(did, iid); };
+        var li = el('li'), tm = el('time'); li.setAttribute('data-iid', iid);
+        var tIn = el('input', 'nx-pe-time'); tIn.type = 'text'; tIn.inputMode = 'numeric'; tIn.maxLength = 5; tIn.placeholder = '18:00'; tIn.value = nxTime(it0); tIn.setAttribute('data-notr', ''); tIn.setAttribute('aria-label', L('Время, например 18:00', 'Hora, por ejemplo 18:00')); tIn.autocomplete = 'off';
+        var tCh = false;
+        tIn.addEventListener('change', function(){ var it = I(); if (!it) return; var v = nxPeHm(tIn.value); tIn.value = v; it.t = v; if (it.slot) schedule[it.slot] = v; tCh = true; save(); });
+        tIn.addEventListener('keydown', function(e){ if (e.key === 'Enter'){ e.preventDefault(); tIn.blur(); } });
+        tIn.addEventListener('blur', function(){ if (tCh){ tCh = false; nxPeRedo(); } });
+        tm.appendChild(tIn); li.appendChild(tm);
+        var w = el('div');
+        w.appendChild(nxPeField(I, '', 'Что происходит', 'Qué pasa', 'b', 'nx-pe-what'));
+        w.appendChild(nxPeField(I, 'n', 'Пояснение (можно оставить пустым)', 'Detalle (puede quedar vacío)', 'i', 'nx-pe-det', true));
+        var row = el('div', 'nx-pe-row ed-ui');
+        var lw = el('label', 'nx-pe-sel'); lw.appendChild(el('span', null, '📍')); lw.appendChild(sel(nxLocOptions(), it0.loc || '', function(v){ var it = I(); if (it){ it.loc = v; save(); nxPagesSoon(); } })); row.appendChild(lw);
+        var cw = el('label', 'nx-pe-sel'); cw.appendChild(sel(NX_CATS_OPT, it0.cats || 'all', function(v){ var it = I(); if (it){ it.cats = v; save(); nxPagesSoon(); } })); row.appendChild(cw);
+        row.appendChild(nxPeConfirm(btn(A('Удалить', 'Eliminar'), 'linkbtn danger'), 'Точно? Ещё раз', '¿Seguro? Otra vez', function(){ var d = D(), it = I(); if (d && it) d.items.splice(d.items.indexOf(it), 1); nxPeRedo(); }));
+        w.appendChild(row);
+        li.appendChild(w); ol.appendChild(li);
+      });
+      p.appendChild(ol);
+      var addI = btn(A('+ Добавить пункт', '+ Agregar un punto'), 'pill small nx-pe-addi ed-ui', function(){ var d = D(); if (!d) return; var ni = {id:nxId('i'), ru:'', es:'', nru:'', nes:'', loc:d.items.length ? d.items[d.items.length - 1].loc || '' : '', t:''}; d.items.push(ni); nxPeRedo(); setTimeout(function(){ var li = box.querySelector('[data-iid="' + ni.id + '"]'); if (!li) return; li.scrollIntoView({block: 'center', behavior: 'smooth'}); var t = li.querySelector('.nx-pe-time'); if (t) t.focus(); }, 30); });
+      p.appendChild(addI);
+      var dn = el('div', 'dresscode nx-pe-dn');
+      dn.appendChild(nxPeField(D, 'n', 'Заметка под днём (например, про обувь) — можно оставить пустой', 'Nota del día (por ejemplo, sobre el calzado); puede quedar vacía', 'span', '', true));
+      p.appendChild(dn);
+      if (d0.date === '2027-04-17' && nxActsNode) p.appendChild(nxActsNode);
+      wrap.appendChild(p);
+    });
+    if (!all.length) wrap.appendChild(el('p', 'hint', A('Дней пока нет: нажмите «+ День».', 'Aún no hay días: pulsa «+ Día».')));
+    box.appendChild(wrap);
+  }
+  var _nxRenderProgram56 = renderProgram;
+  renderProgram = function(){
+    var box = $('nxProg');
+    if (nxPeOn()){
+      if (box && box.querySelector('.nx-pe') && nxPeBusy()){ nxPePend = true; return; } /* don't pull the text from under the cursor */
+      nxPePend = false;
+      return renderProgramEd();
+    }
+    return _nxRenderProgram56();
+  };
+  var _nxEdEnter56 = edEnter; edEnter = function(){ var r = _nxEdEnter56.apply(this, arguments); renderProgram(); return r; };
+  var _nxEdLeave56 = edLeave; edLeave = function(){ var r = _nxEdLeave56.apply(this, arguments); clearTimeout(nxPeT); save(); renderProgram(); return r; };
+  document.addEventListener('focusin', function(e){ if (nxPeOn() && e.target.closest && e.target.closest('#nxProg') && typeof edSel !== 'undefined' && edSel) edSelect(null); });
   function renderAll(){ applyCat(); renderGreeting(); renderRSVP(); renderGuests(); renderStories(); renderExtra(); requestAnimationFrame(updateTone); }
   /* ---------- keep layout identical in both languages ---------- */
   var STAB = 'h1,h2,h3,p,li,dt,dd,summary,figcaption,legend,.chips,.daytabs,.keyfacts,.hero-actions,.row-actions,.hero-side,.moment-in,.chapter-in,.tile-in,.ttext,.clocks,.clocks div,.modecard,.climate,.numbers,.cmp-row,.pairs,.gstats,.pack-progress,.placecard,.q-text,.q-fb,.summary,.member,.arr,.arr>div,.mecard,.act,.act>div,.upload,.today,.songs li,.life-head,.duo-label,.me-bar,.inv-btns,.inv-picks,.inv-extra,.inv-party,.inv-form,.inv-done,.inv-card .hero-actions,.inv-who';
@@ -8790,8 +8919,8 @@ html:not(.sn-editing) .ed-hidden{display:none!important}
     if (Math.abs(window.scrollY - keepY) > 0.5) window.scrollTo(0, keepY);
   }
   /* ================= site editor: edit any text or photo, then publish the page for everyone ================= */
-  function edFix(j){ var hz = j && j.items && j.items.skseo; if (hz && hz.es === 'Viaje' && !(j.v > 1795128006972)){ delete hz.es; if (!Object.keys(hz).length) delete j.items.skseo; }
-    var x = j && j.items && j.items.b4b62y; if (x && x.hide && !(j.v > 1795128006823)) delete x.hide; }
+  function edFix(j){ var hz = j && j.items && j.items.skseo; if (hz && hz.es === 'Viaje' && !(j.v > 1795140749565)){ delete hz.es; if (!Object.keys(hz).length) delete j.items.skseo; }
+    var x = j && j.items && j.items.b4b62y; if (x && x.hide && !(j.v > 1795140749461)) delete x.hide; }
   var ED = (function(){ var j = null; try { j = JSON.parse($('snEditsInline').textContent); } catch(e){} j = j && j.items ? j : {v:0, items:{}}; try { var jc = JSON.parse(localStorage.getItem('sn-srv-edits') || 'null'); if (jc && jc.items && jc.v > j.v) j = jc; } catch(e){} if (nxIsAdminDev()) try { var jf = JSON.parse(localStorage.getItem('sn-srv-edits-full') || 'null'); if (jf && jf.items && jf.v >= j.v) j = jf; } catch(e){} NX_EB = j; j = nxEdView(j); j.blocks = j.blocks || []; j.moved = j.moved || {}; edFix(j); return j; })();
   function edState(){ return JSON.stringify({i: ED.items, b: ED.blocks, m: ED.moved, al: ED.album || {}}); }
   function edSetState(x){ var o = typeof x === 'string' ? JSON.parse(x) : x; ED.items = o.i || {}; ED.blocks = o.b || []; ED.moved = o.m || {}; ED.album = o.al || {}; }
@@ -10280,6 +10409,55 @@ html.sn-editing [data-route="about"] .lives,html.sn-editing [data-route="about"]
 .nx-orow[open] summary span::before{transform:rotate(45deg)}
 .nx-orow summary:hover span{text-decoration:underline;text-underline-offset:3px}
 .nx-obody{padding:0 0 12px 15px}
+</style>
+<style>/* v56: the program, edited on the page */
+.nx-pe-note{display:flex;flex-direction:column;gap:4px;margin:28px 0 0;padding:14px 16px;border:1px dashed var(--ocean);background:rgba(255,255,255,.6);font-size:15px;line-height:1.45;color:var(--ink-soft)}
+.nx-pe-note b{color:var(--ink);font-weight:600}
+html[data-gcat="day"] .nx-pe-tabs{display:grid}
+.nx-pe-tabs{grid-auto-columns:minmax(0,1fr)}
+.nx-pe-tabs .nx-pe-only{font-size:11px;letter-spacing:.06em;color:var(--ink-soft);opacity:.85}
+.nx-pe-tabs .daytab[aria-selected="true"] .nx-pe-only{color:rgba(255,255,255,.75)}
+.nx-pe-add{border-style:dashed;align-items:center;justify-content:center;text-align:center;max-width:110px}
+.nx-pe-add b{font-size:32px}
+.nx-pe .nx-pe-t{outline:none;border-radius:3px;min-width:2ch;cursor:text;transition:background .15s, box-shadow .15s}
+.nx-pe .nx-pe-t:hover{box-shadow:0 0 0 1px rgba(46,100,130,.35)}
+.nx-pe .nx-pe-t:focus{box-shadow:0 0 0 2px var(--ocean);background:rgba(255,255,255,.85)}
+.nx-pe .nx-pe-t:empty::before{content:attr(data-ph);color:var(--ink-soft);opacity:.55;font-style:italic;pointer-events:none}
+.nx-pe-pair{display:flex;flex-direction:column;gap:2px}
+.nx-pe .nx-pe-alt{display:block;font-family:inherit;font-size:13px!important;font-weight:400;font-style:normal;line-height:1.35;color:var(--ink-soft);padding-left:28px;position:relative;margin:1px 0 4px}
+.nx-pe .nx-pe-alt::after{content:attr(data-lab);position:absolute;left:0;top:1px;font-size:10px;letter-spacing:.12em;padding:1px 4px;border:1px solid currentColor;border-radius:3px;opacity:.7}
+.nx-pe .nx-pe-alt:empty::before{content:attr(data-ph)}
+.nx-pe-tl b.nx-pe-t,.nx-pe-tl .nx-pe-what b{display:block}
+.nx-pe-tl i.nx-pe-t{display:block;font-style:normal;color:var(--ink-soft);font-size:16px}
+.nx-pe .dbanner{height:260px}
+.nx-pe .dbanner figcaption{gap:6px}
+.nx-pe .dbanner figcaption .nx-pe-t:hover{box-shadow:0 0 0 1px rgba(255,255,255,.5)}
+.nx-pe .dbanner figcaption .nx-pe-t:focus{box-shadow:0 0 0 2px #fff;background:rgba(14,24,32,.45)}
+.nx-pe .dbanner figcaption .nx-pe-alt{color:rgba(255,255,255,.85)}
+.nx-pe .dbanner figcaption b.nx-pe-t{font-family:var(--f-display);font-weight:500;font-size:44px;line-height:1}
+.nx-pe .dbanner input.nx-pe-date{align-self:flex-start;width:auto;min-height:0;font:inherit;font-size:16px;letter-spacing:.06em;color:#fff;background:rgba(14,24,32,.5);border:1px solid rgba(255,255,255,.55);border-radius:4px;padding:4px 8px;color-scheme:dark}
+.nx-pe-photo{position:absolute;top:14px;right:14px;z-index:2}
+.nx-pe-photo .pill{background:rgba(255,255,255,.92);color:var(--ink);border-color:transparent}
+.nx-pe-meta{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin:14px 0 4px;font-size:14px;color:var(--ink-soft)}
+.nx-pe .nx-pe-meta select,.nx-pe .nx-pe-row select{width:auto;min-height:34px;font:inherit;font-size:14px;padding:4px 8px;border:1px solid var(--line);border-radius:4px;background:var(--white);color:var(--ink);max-width:100%;min-width:0}
+.nx-pe-meta .linkbtn{margin-left:auto}
+.nx-pe input.nx-pe-time{font:inherit;font-size:16px;font-weight:500;font-variant-numeric:tabular-nums;width:100%;min-height:0;padding:4px 6px;border:1px solid var(--line);text-align:center;letter-spacing:.02em;border-radius:4px;background:var(--white);color:var(--ink)}
+.nx-pe-meta{flex-wrap:wrap}
+.nx-pe-row{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin-top:6px;font-size:13px}
+.nx-pe-sel{display:inline-flex;align-items:center;gap:4px;min-width:0}
+.nx-pe-row .linkbtn{font-size:13px}
+.nx-pe-tl li{padding:16px 0;border-bottom:1px dashed var(--line)}
+.nx-pe-tl li time{padding-top:2px}
+.nx-pe-addi{margin-top:14px}
+.nx-pe-dn{border-left:2px solid var(--line);padding-left:12px}
+@media (max-width:520px){
+  .nx-pe .dbanner figcaption b.nx-pe-t{font-size:34px}
+  .nx-pe input.nx-pe-time{padding:4px 2px}
+  .nx-pe .nx-pe-alt{padding-left:26px}
+  .nx-pe-meta .linkbtn{margin-left:0}
+  .nx-pe-tabs{grid-auto-flow:row;grid-template-columns:repeat(2,minmax(0,1fr))}
+  .nx-pe-add{max-width:none}
+}
 </style>
 
 </body></html>
