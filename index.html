@@ -2697,7 +2697,7 @@ html:not(.sn-editing) .ed-hidden{display:none!important}
 <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
 
 <script type="application/json" id="snEditsInline">{"v": 1794886090421, "items": {"1eqaac0": {"src": "img/u/47b67c2b462890e3c5dfb6fb1c79be21.jpg"}, "b4b62y": {"src": "img/u/28e0b6ad65e8b81f3685efad7e568bca.jpg", "mv": {"d": [1, 0], "m": [0, -2]}, "st": {"fx": 93, "fy": 100}, "hide": true}, "1t51j4p": {"st": {"fx": 50, "fy": 100}, "src": "img/u/7aad9e381a997bcad46c02847114016d.jpg"}, "1skd3c9": {"src": "img/u/89ac40adf9acc712b5400673cff44e20.jpg", "st": {"fx": 52, "fy": 84}}, "skseo": {"es": "Viaje"}, "zlzlqd": {"es": "Pie de la cuesta, Acapulco"}, "1mjsazb": {"es": ""}, "bckvqo7": {"hide": true}, "b13kgocd": {"hide": true}, "b17dzpq7": {"hide": true}, "4yrp4v": {"es": "2027 · Acapulco, México"}}, "blocks": [], "moved": {}}</script>
-<script>var SN_SRC = ''; window.SN_SRC_V = '617a92480e';</script>
+<script>var SN_SRC = ''; window.SN_SRC_V = '17f8aa03be';</script>
 <script>
 /* site editor: give every static text and photo a stable key before any script changes the page */
 (function(){
@@ -6408,7 +6408,7 @@ html:not(.sn-editing) .ed-hidden{display:none!important}
       p.appendChild(ol);
       if (d.nru || d.nes) p.appendChild(el('p', 'dresscode', nxBi(d, 'n')));
       if (!isHidden('dress')){ var dl = el('a', 'linkbtn nx-dresslink', A('Дресс-код →', 'Código de vestimenta →')); dl.href = '#dress'; p.appendChild(dl); }
-      if (d.date === '2027-04-17' && nxActsNode) p.appendChild(nxActsNode);
+      nxActsPlace(p, d);
       box.appendChild(p);
     });
   }
@@ -8504,7 +8504,7 @@ html:not(.sn-editing) .ed-hidden{display:none!important}
   }
 
   /* ---- content kept in the admin tabs ---- */
-  var NX_PCONT = {program: ['prog', 'locs'], dress: ['dress'], faq: ['faq'], hotel: ['hotels']};
+  var NX_PCONT = {program: ['prog', 'locs', 'actsOn'], dress: ['dress'], faq: ['faq'], hotel: ['hotels']};
   var NX_PTAB = {program: 'program', dress: 'dress', faq: 'faq', hotel: 'hotels'};
   function nxCV(n){ var p = settings.pub; if (!nxDraftView() && p && Object.prototype.hasOwnProperty.call(p, n)) return p[n] == null ? undefined : p[n]; return settings[n]; }
   function nxSVal(n){ return settings[n] === undefined ? null : settings[n]; }
@@ -8849,7 +8849,7 @@ html:not(.sn-editing) .ed-hidden{display:none!important}
       var dn = el('div', 'dresscode nx-pe-dn');
       dn.appendChild(nxPeField(D, 'n', 'Заметка под днём (например, про обувь) — можно оставить пустой', 'Nota del día (por ejemplo, sobre el calzado); puede quedar vacía', 'span', '', true));
       p.appendChild(dn);
-      if (d0.date === '2027-04-17' && nxActsNode) p.appendChild(nxActsNode);
+      nxActsPlace(p, d0);
       wrap.appendChild(p);
     });
     if (!all.length) wrap.appendChild(el('p', 'hint', A('Дней пока нет: нажмите «+ День».', 'Aún no hay días: pulsa «+ Día».')));
@@ -8868,6 +8868,31 @@ html:not(.sn-editing) .ed-hidden{display:none!important}
   var _nxEdEnter56 = edEnter; edEnter = function(){ var r = _nxEdEnter56.apply(this, arguments); renderProgram(); return r; };
   var _nxEdLeave56 = edLeave; edLeave = function(){ var r = _nxEdLeave56.apply(this, arguments); clearTimeout(nxPeT); save(); renderProgram(); return r; };
   document.addEventListener('focusin', function(e){ if (nxPeOn() && e.target.closest && e.target.closest('#nxProg') && typeof edSel !== 'undefined' && edSel) edSelect(null); });
+  /* ================= v57: «Чем заняться в субботу днём» can be hidden from guests (hidden unless turned on and published) ================= */
+  function nxActsOn(){ var p = settings.pub; if (!nxDraftView()) return !!(p && p.actsOn); return !!settings.actsOn; }
+  function nxActsSet(on){ if (on) settings.actsOn = true; else delete settings.actsOn; save(); renderProgram(); nxPagesSoon(); if ($('admin') && !$('admin').hidden) renderAdmin(); }
+  function nxActsBar(){
+    var on = !!settings.actsOn, w = el('div', 'nx-acts-bar ed-ui' + (on ? ' on' : ''));
+    w.appendChild(el('span', null, on ? A('Блок «Чем заняться в субботу днём» показан гостям', 'El bloque «Qué hacer el sábado de día» está visible') : A('Блок «Чем заняться в субботу днём» скрыт от гостей', 'El bloque «Qué hacer el sábado de día» está oculto')));
+    w.appendChild(btn(on ? A('Скрыть от гостей', 'Ocultar') : A('Показать гостям', 'Mostrar'), 'pill small', function(){ nxActsSet(!on); }));
+    return w;
+  }
+  function nxActsPlace(p, d){
+    if (!(d.date === '2027-04-17' && nxActsNode)) return;
+    var ed = typeof nxPeOn === 'function' && nxPeOn();
+    if (!ed && !nxActsOn()) return;
+    if (ed){ var wr = el('div', 'nx-acts-wrap' + (settings.actsOn ? '' : ' off')); wr.appendChild(nxActsBar()); wr.appendChild(nxActsNode); p.appendChild(wr); }
+    else p.appendChild(nxActsNode);
+  }
+  var _nxAProgramNx57 = aProgramNx;
+  aProgramNx = function(b){
+    var r = _nxAProgramNx57.apply(this, arguments);
+    var c = card(A('Чем заняться в субботу днём', 'Qué hacer el sábado de día'));
+    c.appendChild(el('p', 'hint', A('Блок с записью на активности (волейбол, лодка, йога) внизу дня 17 апреля.', 'El bloque para inscribirse a actividades, al final del 17 de abril.')));
+    c.appendChild(nxActsBar());
+    b.insertBefore(c, b.children[1] || null);
+    return r;
+  };
   function renderAll(){ applyCat(); renderGreeting(); renderRSVP(); renderGuests(); renderStories(); renderExtra(); requestAnimationFrame(updateTone); }
   /* ---------- keep layout identical in both languages ---------- */
   var STAB = 'h1,h2,h3,p,li,dt,dd,summary,figcaption,legend,.chips,.daytabs,.keyfacts,.hero-actions,.row-actions,.hero-side,.moment-in,.chapter-in,.tile-in,.ttext,.clocks,.clocks div,.modecard,.climate,.numbers,.cmp-row,.pairs,.gstats,.pack-progress,.placecard,.q-text,.q-fb,.summary,.member,.arr,.arr>div,.mecard,.act,.act>div,.upload,.today,.songs li,.life-head,.duo-label,.me-bar,.inv-btns,.inv-picks,.inv-extra,.inv-party,.inv-form,.inv-done,.inv-card .hero-actions,.inv-who';
@@ -8919,8 +8944,8 @@ html:not(.sn-editing) .ed-hidden{display:none!important}
     if (Math.abs(window.scrollY - keepY) > 0.5) window.scrollTo(0, keepY);
   }
   /* ================= site editor: edit any text or photo, then publish the page for everyone ================= */
-  function edFix(j){ var hz = j && j.items && j.items.skseo; if (hz && hz.es === 'Viaje' && !(j.v > 1795140749565)){ delete hz.es; if (!Object.keys(hz).length) delete j.items.skseo; }
-    var x = j && j.items && j.items.b4b62y; if (x && x.hide && !(j.v > 1795140749461)) delete x.hide; }
+  function edFix(j){ var hz = j && j.items && j.items.skseo; if (hz && hz.es === 'Viaje' && !(j.v > 1795141336252)){ delete hz.es; if (!Object.keys(hz).length) delete j.items.skseo; }
+    var x = j && j.items && j.items.b4b62y; if (x && x.hide && !(j.v > 1795141336139)) delete x.hide; }
   var ED = (function(){ var j = null; try { j = JSON.parse($('snEditsInline').textContent); } catch(e){} j = j && j.items ? j : {v:0, items:{}}; try { var jc = JSON.parse(localStorage.getItem('sn-srv-edits') || 'null'); if (jc && jc.items && jc.v > j.v) j = jc; } catch(e){} if (nxIsAdminDev()) try { var jf = JSON.parse(localStorage.getItem('sn-srv-edits-full') || 'null'); if (jf && jf.items && jf.v >= j.v) j = jf; } catch(e){} NX_EB = j; j = nxEdView(j); j.blocks = j.blocks || []; j.moved = j.moved || {}; edFix(j); return j; })();
   function edState(){ return JSON.stringify({i: ED.items, b: ED.blocks, m: ED.moved, al: ED.album || {}}); }
   function edSetState(x){ var o = typeof x === 'string' ? JSON.parse(x) : x; ED.items = o.i || {}; ED.blocks = o.b || []; ED.moved = o.m || {}; ED.album = o.al || {}; }
@@ -10458,6 +10483,13 @@ html[data-gcat="day"] .nx-pe-tabs{display:grid}
   .nx-pe-tabs{grid-auto-flow:row;grid-template-columns:repeat(2,minmax(0,1fr))}
   .nx-pe-add{max-width:none}
 }
+</style>
+<style>
+.nx-acts-wrap{margin-top:26px;border:1px dashed var(--ocean);padding:12px 14px 4px}
+.nx-acts-wrap.off .acts{opacity:.4}
+.nx-acts-bar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 12px;font-size:14px;color:var(--ink-soft)}
+.nx-acts-bar.on span{color:var(--ink)}
+.nx-acts-wrap .acts{margin-top:10px}
 </style>
 
 </body></html>
