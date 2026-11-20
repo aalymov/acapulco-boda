@@ -2,12 +2,7 @@ import json, os, urllib.request, urllib.parse, re, time, io
 from PIL import Image
 UA = {'User-Agent': 'acapulco-boda-photo-picker/1.0 (wedding site; github.com/aalymov/acapulco-boda)'}
 Q = {
- 'ru-vykup': ['russian wedding ransom', 'выкуп невесты', 'russian wedding bridesmaids groom', 'ukrainian wedding ransom bride', 'russian wedding groom door'],
- 'ru-tamada': ['wedding toastmaster', 'wedding mc microphone', 'wedding host microphone guests', 'russian wedding host', 'тамада свадьба'],
- 'mx-padrinos': ['padrinos boda', 'mexican wedding padrinos', 'mexican wedding church', 'boda mexicana iglesia', 'filipino wedding sponsors'],
- 'mx-vibora': ['vibora de la mar', 'mexican wedding vibora', 'wedding conga line', 'bride groom chairs dance', 'mexican wedding dance'],
- 'mx-batucada': ['batucada boda', 'batucada', 'hora loca boda', 'samba drummers', 'wedding drummers'],
- 'mx-altar': ['bride walking down the aisle', 'mexican wedding bride church', 'bride entering church', 'boda novia iglesia', 'groom waiting bride altar'],
+ 'ru-vykup': ['russian wedding', 'russian wedding groom', 'wedding groom bridesmaids game', 'wedding ransom', 'groom bridesmaids door', 'ukrainian wedding', 'svadba', 'wedding games groom', 'bridesmaids tease groom'],
 }
 OK_LIC = {'by', 'by-sa', 'cc0', 'pdm', 'by-nc', 'by-nc-sa'}
 def get(u):
@@ -28,9 +23,9 @@ for theme, qs in Q.items():
             seen.add(r['id'])
             items.append({'id': r['id'], 'title': (r.get('title') or '')[:80], 'url': r.get('url'), 'thumb': r.get('thumbnail'), 'creator': (r.get('creator') or '')[:60], 'license': ('CC0' if r['license'] == 'cc0' else 'PD' if r['license'] == 'pdm' else 'CC ' + r['license'].upper() + ' ' + (r.get('license_version') or '')).strip(), 'page': r.get('foreign_landing_url'), 'src': r.get('source'), 'q': q})
         time.sleep(1)
-        if len(items) >= 30: break
+        if len(items) >= 45: break
     keep = []
-    for it in items[:30]:
+    for it in items[:45]:
         data = get(it['url']) if it.get('url') else None
         try:
             im = Image.open(io.BytesIO(data)).convert('RGB')
