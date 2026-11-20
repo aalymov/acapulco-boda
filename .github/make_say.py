@@ -25,7 +25,10 @@ for lang, (voice, items) in FINAL.items():
     for i, variants in enumerate(items):
         chosen = None
         for vi, txt in enumerate(variants):
-            raw = 'w/%s-%d-%d.mp3' % (lang, i, vi); asyncio.run(synth(txt, voice, raw))
+            raw = 'w/%s-%d-%d.mp3' % (lang, i, vi)
+            try: asyncio.run(synth(txt, voice, raw))
+            except Exception as e:
+                print(lang, i, 'SKIP', txt, type(e).__name__); continue
             w16 = raw + '.wav'; subprocess.run(['ffmpeg', '-loglevel', 'error', '-y', '-i', raw, '-ac', '1', '-ar', '16000', '-acodec', 'pcm_s16le', w16], check=True)
             with wave.open(w16) as w: pcm = np.frombuffer(w.readframes(w.getnframes()), dtype=np.int16).astype(np.float32) / 32768.0
             heard = ' '.join(s.text for s in asr.transcribe(pcm, language=lang, beam_size=5)[0]).strip()
@@ -35,6 +38,6 @@ for lang, (voice, items) in FINAL.items():
             rep[lang].append(row)
             if ok:
                 chosen = raw; break
-        if chosen is None: chosen = 'w/%s-%d-0.mp3' % (lang, i)
+        if chosen is None: chosen = sorted(f for f in os.listdir('w') if f.startswith('%s-%d-' % (lang, i)) and f.endswith('.mp3'))[0]; chosen = 'w/' + chosen
         subprocess.run(['ffmpeg', '-loglevel', 'error', '-y', '-i', chosen, '-af', 'silenceremove=start_periods=1:start_threshold=-50dB:start_silence=0.08,areverse,silenceremove=start_periods=1:start_threshold=-50dB:start_silence=0.15,areverse,loudnorm=I=-16:TP=-1.5', '-ac', '1', '-ar', '24000', '-b:a', '48k', 'out/audio/%s-%02d.mp3' % (lang, i)], check=True)
 json.dump(rep, open('out/report.json', 'w'), ensure_ascii=False, indent=1)
