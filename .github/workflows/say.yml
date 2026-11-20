@@ -8,6 +8,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with: {sparse-checkout: .github}
+      - run: sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg > /dev/null
       - run: pip install -q piper-tts faster-whisper && python3 .github/make_say.py
       - run: |
           cd out && git init -q && git add -A && git -c user.name=bot -c user.email=bot@example.com commit -q -m say
