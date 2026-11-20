@@ -1,0 +1,42 @@
+[
+ {
+  "k": 0,
+  "how": "cut",
+  "voice": "ru-RU-DmitryNeural",
+  "from": "Гости кричат: «Горько!»",
+  "heard": "Горько.",
+  "sec": 0.82
+ },
+ {
+  "k": 1,
+  "how": "cut",
+  "voice": "ru-RU-DmitryNeural",
+  "from": "Горько! Горько! Горько!",
+  "heard": "Горка",
+  "sec": 1.58
+ },
+ {
+  "k": 2,
+  "how": "cut",
+  "voice": "ru-RU-DmitryNeural",
+  "from": "И все закричали: горько!",
+  "heard": "Горько.",
+  "sec": 0.88
+ },
+ {
+  "k": 4,
+  "how": "cut",
+  "voice": "ru-RU-DmitryNeural",
+  "from": "Мне очень горько.",
+  "heard": "горка.",
+  "sec": 0.58
+ },
+ {
+  "k": 5,
+  "how": "whole",
+  "voice": "ru-RU-SvetlanaNeural",
+  "from": "Горько!",
+  "heard": "Горько.",
+  "sec": 0.89
+ }
+]
