@@ -1,22 +1,11 @@
 import json, os, urllib.request, urllib.parse, re, time
 UA = {'User-Agent': 'acapulco-boda-photo-picker/1.0 (wedding site; github.com/aalymov/acapulco-boda)'}
 Q = {
- 'mx-padrinos': ['padrinos boda', 'Mexican wedding godparents', 'boda mexicana'],
- 'mx-lazo': ['lazo boda', 'wedding lasso ceremony', 'lazo matrimonial'],
- 'mx-tornaboda': ['taquiza', 'tacos al pastor', 'chilaquiles'],
- 'mx-vibora': ['vibora de la mar', 'wedding guests dancing conga', 'wedding reception dance'],
- 'mx-batucada': ['batucada', 'samba drummers', 'batucada drums street'],
- 'mx-altar': ['bride walking aisle', 'novia altar boda', 'bride father aisle wedding'],
- 'mx-mariachi': ['mariachi', 'mariachi band', 'mariachi trumpet'],
- 'mx-liga': ['wedding garter', 'garter toss', 'bride garter'],
- 'ru-karavai': ['karavai wedding', 'каравай свадьба', 'korovai bread'],
- 'ru-gorko': ['wedding kiss', 'свадьба поцелуй', 'bride groom kiss'],
- 'ru-toast': ['wedding toast', 'champagne toast', 'toasting glasses wedding'],
- 'ru-vykup': ['выкуп невесты', 'bride ransom', 'свадьба выкуп'],
- 'ru-witness': ['свидетели свадьба', 'best man bridesmaid', 'свидетельница лента'],
- 'ru-tamada': ['тамада', 'wedding host microphone', 'wedding entertainer'],
- 'ru-ring': ['wedding rings hands', 'обручальное кольцо', 'wedding ring hand'],
- 'ru-day2': ['wedding feast table', 'russian wedding table', 'свадебный стол'],
+ 'mx-lazo': ['wedding lazo', 'lazo nupcial', 'boda católica México', 'Mexican wedding ceremony', 'wedding rosary couple'],
+ 'mx-vibora': ['conga line', 'wedding dance party guests', 'baile boda invitados', 'wedding reception dancing'],
+ 'ru-ring': ['wedding rings', 'wedding ring finger', 'обручальные кольца', 'wedding bands gold pair'],
+ 'mx-padrinos': ['padrinos', 'boda Oaxaca', 'boda Guadalajara', 'Mexican wedding couple', 'boda en México'],
+ 'ru-toast2': ['raising glasses', 'clinking glasses', 'toast glasses celebration'],
 }
 def api(params):
     u = 'https://commons.wikimedia.org/w/api.php?' + urllib.parse.urlencode(params)
@@ -46,8 +35,8 @@ for theme, qs in Q.items():
             if not re.search(r'CC|Public domain|PD', lic or '', re.I): continue
             seen.add(t)
             items.append({'file': t[5:], 'thumb': ii.get('thumburl'), 'w': ii.get('width'), 'h': ii.get('height'), 'artist': strip((em.get('Artist') or {}).get('value'))[:80], 'license': lic, 'desc': strip((em.get('ImageDescription') or {}).get('value'))[:160]})
-            if len(items) >= 12: break
-        if len(items) >= 12: break
+            if len(items) >= 16: break
+        if len(items) >= 16: break
     for i, it in enumerate(items):
         fn = 'img/%s-%02d.jpg' % (theme, i)
         try:
