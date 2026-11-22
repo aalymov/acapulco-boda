@@ -2766,7 +2766,7 @@ html:not(.sn-editing) .ed-hidden{display:none!important}
 <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
 
 <script type="application/json" id="snEditsInline">{"v": 1794886090421, "items": {"1eqaac0": {"src": "img/u/47b67c2b462890e3c5dfb6fb1c79be21.jpg"}, "b4b62y": {"src": "img/u/28e0b6ad65e8b81f3685efad7e568bca.jpg", "mv": {"d": [1, 0], "m": [0, -2]}, "st": {"fx": 93, "fy": 100}, "hide": true}, "1t51j4p": {"st": {"fx": 50, "fy": 100}, "src": "img/u/7aad9e381a997bcad46c02847114016d.jpg"}, "1skd3c9": {"src": "img/u/89ac40adf9acc712b5400673cff44e20.jpg", "st": {"fx": 52, "fy": 84}}, "skseo": {"es": "Viaje"}, "zlzlqd": {"es": "Pie de la cuesta, Acapulco"}, "1mjsazb": {"es": ""}, "bckvqo7": {"hide": true}, "b13kgocd": {"hide": true}, "b17dzpq7": {"hide": true}, "4yrp4v": {"es": "2027 · Acapulco, México"}}, "blocks": [], "moved": {}}</script>
-<script>var SN_SRC = ''; window.SN_SRC_V = 'e5a0ef86db';</script>
+<script>var SN_SRC = ''; window.SN_SRC_V = '54b01b88f3';</script>
 <script>
 /* site editor: give every static text and photo a stable key before any script changes the page */
 (function(){
@@ -9100,10 +9100,11 @@ html:not(.sn-editing) .ed-hidden{display:none!important}
     if (snSrv.full && NX_FULL60 && !NX_FULL60.fix61){ NX_FULL60.fix61 = 1; if (nxFix60Set()){ renderAll(); } settings.fix61 = 1; save(); }
     if (typeof nxFix62 === 'function') nxFix62();
     if (typeof nxFix68 === 'function') nxFix68();
+    if (typeof nxFix69 === 'function') nxFix69();
     if (!settings.fix60e) nxFix60Ed().then(function(ok){ if (ok){ settings.fix60e = 1; save(); nxPagesSoon(); } }, function(){});
   }
   var NX_FULL60 = null; /* the settings exactly as the server sent them with the full admin data */
-  var _nxSnApplyFull60 = snApplyFull; snApplyFull = function(st){ NX_FULL60 = (st && st.settings) ? {fix61: st.settings.fix61, fix62: st.settings.fix62, fix68: st.settings.fix68} : null; return _nxSnApplyFull60.apply(this, arguments); };
+  var _nxSnApplyFull60 = snApplyFull; snApplyFull = function(st){ NX_FULL60 = (st && st.settings) ? {fix61: st.settings.fix61, fix62: st.settings.fix62, fix68: st.settings.fix68, fix69: st.settings.fix69} : null; return _nxSnApplyFull60.apply(this, arguments); };
   /* v68: Russian for the hotel text Nao changed in Spanish — only on the full admin data, once */
   var NX_FIX68 = {"hp": {"fes": "Queremos que disfrutes de este fin de semana con toda tranquilidad. Por ello, ponemos a su disposición hospedaje completo para el viernes y sábado, esto con el fin de que solo se preocupen por compartir y disfrutar con nosotros.\n\nDurante el fin de semana tendremos preparados alimentos y algunas bebidas para compartir contigo. *Las bebidas alcohólicas no estarán incluidas, por lo que te pedimos traer las bebidas de tu preferencia en cantidad suficiente para disfrutar durante toda tu estancia.\n\nAdemás, el lugar contará con cocinas equipadas a disposición de nuestros invitados, por si desean llevar sus botanas favoritas, preparar algún antojo de medianoche o requieren alimentos específicos por necesidades alimenticias o dietas especiales.", "fru": "Мы хотим, чтобы вы провели эти выходные совершенно спокойно. Поэтому мы берём на себя ваше проживание на пятницу и субботу — чтобы вы думали только о том, как общаться и радоваться вместе с нами.\n\nНа выходных мы приготовим для вас еду и немного напитков. *Алкогольные напитки не входят, поэтому просим взять с собой те, которые вы любите, в достаточном количестве на всё время пребывания.\n\nКроме того, на месте будут оборудованные кухни для гостей: можно взять любимые закуски, приготовить что-нибудь вкусное на ночь или привезти особые продукты, если у вас специальное питание или диета."}};
   function nxFix68(){
@@ -9112,6 +9113,14 @@ html:not(.sn-editing) .ed-hidden{display:none!important}
     [settings, settings.pub].forEach(function(S){ (S && S.hotels || []).forEach(function(h){ var t = NX_FIX68[h.id]; if (t && h.fes === t.fes && h.fru !== t.fru){ h.fru = t.fru; ch = true; } }); });
     if (ch) renderAll();
     settings.fix68 = 1; save();
+  }
+  var NX_FIX69 = {"i2": {"nes": "Para comenzar el fin de semana, nos encantaría compartir con ustedes una tarde relajada junto al mar, disfrutando del sol, la playa y la oportunidad de pasar un rato juntos antes del gran día. Código de vestimenta: Casual de playa. Ropa fresca y cómoda, traje de baño y sandalias para disfrutar de una tarde junto al mar.", "nru": "Чтобы начать выходные, нам очень хочется провести с вами спокойный вечер у моря: солнце, пляж и время побыть вместе перед большим днём. Дресс-код: свободный пляжный стиль. Лёгкая и удобная одежда, купальник и сандалии — для вечера у моря."}, "i4": {"nes": "Hemos preparado una actividad que nos encantaría compartir con ustedes. Sabemos que es temprano, pero esperamos que nos acompañen para disfrutar juntos el inicio de este día especial. Código de vestimenta: Ropa deportiva o cómoda con tenis o sandalias.", "nru": "Мы приготовили занятие у моря, которое очень хотим разделить с вами. Знаем, что рано, но надеемся, что вы присоединитесь и мы вместе встретим начало этого особенного дня. Дресс-код: спортивная или удобная одежда, кроссовки или сандалии."}, "i6": {"nes": "Un momento para convivir, compartir  y disfrutar juntos de algunas actividades que hemos preparado con mucho cariño. Código de vestimenta: Ropa deportiva o cómoda con tenis o sandalias.", "nru": "Время пообщаться, поделиться нашими культурами и вместе порадоваться сюрпризам, которые мы приготовили с большой любовью. Дресс-код: спортивная или удобная одежда, кроссовки или сандалии."}, "imwo96a3baqc": {"nes": "El momento que tanto hemos esperado. Nos hace muy felices poder celebrar nuestra unión rodeados de las personas que más queremos. ¡Gracias por acompañarnos! Código de vestimenta: Formal playero (ver detalle en la pestaña de vestimenta)", "nru": "Момент, которого мы так долго ждали. Мы очень счастливы отметить наш союз в окружении самых дорогих людей. Спасибо, что вы с нами! Дресс-код: нарядный пляжный (подробности на странице «Дресс-код»)."}, "imwo98ju5wnh": {"nes": "Ahora sí, es momento de disfrutar, compartir y celebrar juntos. ¡Nos vemos en la pista de baile! Código de vestimenta: Formal playero (ver detalle en la pestaña de vestimenta)", "nru": "А теперь — время радоваться, общаться и праздновать вместе. Увидимся на танцполе! Дресс-код: нарядный пляжный (подробности на странице «Дресс-код»)."}};
+  function nxFix69(){
+    if (!nxIsAdminDev() || !snKey() || !snSrv.full || !NX_FULL60 || NX_FULL60.fix69) return;
+    NX_FULL60.fix69 = 1; var ch = false;
+    [settings, settings.pub].forEach(function(S){ (S && S.prog || []).forEach(function(d){ (d.items || []).forEach(function(x){ var t = NX_FIX69[x.id]; if (t && x.nes === t.nes && x.nru !== t.nru){ x.nru = t.nru; ch = true; } }); }); });
+    if (ch) renderAll();
+    settings.fix69 = 1; save();
   }
   var _nxSnEdits60 = snEdits; snEdits = function(){ var r = _nxSnEdits60.apply(this, arguments); setTimeout(nxFix60, 400); return r; };
   /* ================= v62: the Russian invitation says what Nao wrote in Spanish ================= */
@@ -9197,8 +9206,8 @@ html:not(.sn-editing) .ed-hidden{display:none!important}
     if (Math.abs(window.scrollY - keepY) > 0.5) window.scrollTo(0, keepY);
   }
   /* ================= site editor: edit any text or photo, then publish the page for everyone ================= */
-  function edFix(j){ var hz = j && j.items && j.items.skseo; if (hz && hz.es === 'Viaje' && !(j.v > 1795370003164)){ delete hz.es; if (!Object.keys(hz).length) delete j.items.skseo; }
-    var x = j && j.items && j.items.b4b62y; if (x && x.hide && !(j.v > 1795370002764)) delete x.hide; }
+  function edFix(j){ var hz = j && j.items && j.items.skseo; if (hz && hz.es === 'Viaje' && !(j.v > 1795370796569)){ delete hz.es; if (!Object.keys(hz).length) delete j.items.skseo; }
+    var x = j && j.items && j.items.b4b62y; if (x && x.hide && !(j.v > 1795370796457)) delete x.hide; }
   var ED = (function(){ var j = null; try { j = JSON.parse($('snEditsInline').textContent); } catch(e){} j = j && j.items ? j : {v:0, items:{}}; try { var jc = JSON.parse(localStorage.getItem('sn-srv-edits') || 'null'); if (jc && jc.items && jc.v > j.v) j = jc; } catch(e){} if (nxIsAdminDev()) try { var jf = JSON.parse(localStorage.getItem('sn-srv-edits-full') || 'null'); if (jf && jf.items && jf.v >= j.v) j = jf; } catch(e){} NX_EB = j; j = nxEdView(j); j.blocks = j.blocks || []; j.moved = j.moved || {}; edFix(j); return j; })();
   function edState(){ return JSON.stringify({i: ED.items, b: ED.blocks, m: ED.moved, al: ED.album || {}}); }
   function edSetState(x){ var o = typeof x === 'string' ? JSON.parse(x) : x; ED.items = o.i || {}; ED.blocks = o.b || []; ED.moved = o.m || {}; ED.album = o.al || {}; }
