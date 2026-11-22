@@ -2,9 +2,7 @@ import json, os, urllib.request, urllib.parse, time, io
 from PIL import Image
 UA = {'User-Agent': 'acapulco-boda-photo-picker/1.0 (wedding site; github.com/aalymov/acapulco-boda)'}
 Q = {
- 'honeymoon': ['honeymoon beach sunset', 'tropical beach sunset couple', 'couple walking beach sunset', 'overwater bungalow', 'tropical beach hammock'],
- 'car': ['car coastal road', 'car road trip sunset', 'new car keys', 'car mountain road', 'convertible road trip'],
- 'house': ['cozy house garden', 'house exterior garden', 'modern house exterior', 'house keys new home', 'family home porch'],
+ 'house': ['modern home exterior', 'cozy cottage garden', 'house with pool', 'casa moderna', 'home sweet home house', 'white house garden', 'family house front yard', 'dream home'],
 }
 OK_LIC = {'by', 'by-sa', 'cc0', 'pdm'}
 def get(u):
