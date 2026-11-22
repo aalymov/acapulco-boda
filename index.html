@@ -2443,7 +2443,7 @@ html:not(.sn-editing) .ed-hidden{display:none!important}
           <button type="button" class="pill small gift-copy">Скопировать CLABE</button>
         </article>
         <article class="gift-card gift-sasha">
-          <h2>Саша</h2>
+          <h2>Саша и Нао</h2>
           <dl>
             <div><dt>Банк</dt><dd data-both>STP</dd></div>
             <div><dt>Получатель</dt><dd data-both>Ale&#107;sandr Alymov</dd></div>
@@ -2766,7 +2766,7 @@ html:not(.sn-editing) .ed-hidden{display:none!important}
 <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
 
 <script type="application/json" id="snEditsInline">{"v": 1794886090421, "items": {"1eqaac0": {"src": "img/u/47b67c2b462890e3c5dfb6fb1c79be21.jpg"}, "b4b62y": {"src": "img/u/28e0b6ad65e8b81f3685efad7e568bca.jpg", "mv": {"d": [1, 0], "m": [0, -2]}, "st": {"fx": 93, "fy": 100}, "hide": true}, "1t51j4p": {"st": {"fx": 50, "fy": 100}, "src": "img/u/7aad9e381a997bcad46c02847114016d.jpg"}, "1skd3c9": {"src": "img/u/89ac40adf9acc712b5400673cff44e20.jpg", "st": {"fx": 52, "fy": 84}}, "skseo": {"es": "Viaje"}, "zlzlqd": {"es": "Pie de la cuesta, Acapulco"}, "1mjsazb": {"es": ""}, "bckvqo7": {"hide": true}, "b13kgocd": {"hide": true}, "b17dzpq7": {"hide": true}, "4yrp4v": {"es": "2027 · Acapulco, México"}}, "blocks": [], "moved": {}}</script>
-<script>var SN_SRC = ''; window.SN_SRC_V = '0148d59cb6';</script>
+<script>var SN_SRC = ''; window.SN_SRC_V = 'e5a0ef86db';</script>
 <script>
 /* site editor: give every static text and photo a stable key before any script changes the page */
 (function(){
@@ -9099,10 +9099,20 @@ html:not(.sn-editing) .ed-hidden{display:none!important}
     /* only on the full admin data: the public copy that arrives first would be overwritten a second later */
     if (snSrv.full && NX_FULL60 && !NX_FULL60.fix61){ NX_FULL60.fix61 = 1; if (nxFix60Set()){ renderAll(); } settings.fix61 = 1; save(); }
     if (typeof nxFix62 === 'function') nxFix62();
+    if (typeof nxFix68 === 'function') nxFix68();
     if (!settings.fix60e) nxFix60Ed().then(function(ok){ if (ok){ settings.fix60e = 1; save(); nxPagesSoon(); } }, function(){});
   }
   var NX_FULL60 = null; /* the settings exactly as the server sent them with the full admin data */
-  var _nxSnApplyFull60 = snApplyFull; snApplyFull = function(st){ NX_FULL60 = (st && st.settings) ? {fix61: st.settings.fix61, fix62: st.settings.fix62} : null; return _nxSnApplyFull60.apply(this, arguments); };
+  var _nxSnApplyFull60 = snApplyFull; snApplyFull = function(st){ NX_FULL60 = (st && st.settings) ? {fix61: st.settings.fix61, fix62: st.settings.fix62, fix68: st.settings.fix68} : null; return _nxSnApplyFull60.apply(this, arguments); };
+  /* v68: Russian for the hotel text Nao changed in Spanish — only on the full admin data, once */
+  var NX_FIX68 = {"hp": {"fes": "Queremos que disfrutes de este fin de semana con toda tranquilidad. Por ello, ponemos a su disposición hospedaje completo para el viernes y sábado, esto con el fin de que solo se preocupen por compartir y disfrutar con nosotros.\n\nDurante el fin de semana tendremos preparados alimentos y algunas bebidas para compartir contigo. *Las bebidas alcohólicas no estarán incluidas, por lo que te pedimos traer las bebidas de tu preferencia en cantidad suficiente para disfrutar durante toda tu estancia.\n\nAdemás, el lugar contará con cocinas equipadas a disposición de nuestros invitados, por si desean llevar sus botanas favoritas, preparar algún antojo de medianoche o requieren alimentos específicos por necesidades alimenticias o dietas especiales.", "fru": "Мы хотим, чтобы вы провели эти выходные совершенно спокойно. Поэтому мы берём на себя ваше проживание на пятницу и субботу — чтобы вы думали только о том, как общаться и радоваться вместе с нами.\n\nНа выходных мы приготовим для вас еду и немного напитков. *Алкогольные напитки не входят, поэтому просим взять с собой те, которые вы любите, в достаточном количестве на всё время пребывания.\n\nКроме того, на месте будут оборудованные кухни для гостей: можно взять любимые закуски, приготовить что-нибудь вкусное на ночь или привезти особые продукты, если у вас специальное питание или диета."}};
+  function nxFix68(){
+    if (!nxIsAdminDev() || !snKey() || !snSrv.full || !NX_FULL60 || NX_FULL60.fix68) return;
+    NX_FULL60.fix68 = 1; var ch = false;
+    [settings, settings.pub].forEach(function(S){ (S && S.hotels || []).forEach(function(h){ var t = NX_FIX68[h.id]; if (t && h.fes === t.fes && h.fru !== t.fru){ h.fru = t.fru; ch = true; } }); });
+    if (ch) renderAll();
+    settings.fix68 = 1; save();
+  }
   var _nxSnEdits60 = snEdits; snEdits = function(){ var r = _nxSnEdits60.apply(this, arguments); setTimeout(nxFix60, 400); return r; };
   /* ================= v62: the Russian invitation says what Nao wrote in Spanish ================= */
   var NX_INV62 = {"es1": "Con mucha ilusión, queremos invitarte a compartir con nosotros un fin de semana junto al mar para celebrar nuestra unión matrimonial.\n\nSerá un regalo contar con tu presencia en el comienzo de esta nueva aventura juntos.", "es2": "Con mucha ilusión, queremos invitarlos a compartir con nosotros un fin de semana inolvidable junto al mar para celebrar nuestra unión matrimonial. \n\nSerá un regalo contar con su presencia en el comienzo de esta nueva aventura juntos.", "ru1": "С большой радостью хотим пригласить тебя провести с нами выходные у моря и отпраздновать наш союз.\n\nДля нас будет настоящим подарком, если ты будешь рядом в начале нашего нового совместного приключения.", "ru2": "С большой радостью хотим пригласить вас провести с нами незабываемые выходные у моря и отпраздновать наш союз.\n\nДля нас будет настоящим подарком, если вы будете рядом в начале нашего нового совместного приключения."};
@@ -9187,8 +9197,8 @@ html:not(.sn-editing) .ed-hidden{display:none!important}
     if (Math.abs(window.scrollY - keepY) > 0.5) window.scrollTo(0, keepY);
   }
   /* ================= site editor: edit any text or photo, then publish the page for everyone ================= */
-  function edFix(j){ var hz = j && j.items && j.items.skseo; if (hz && hz.es === 'Viaje' && !(j.v > 1795369156322)){ delete hz.es; if (!Object.keys(hz).length) delete j.items.skseo; }
-    var x = j && j.items && j.items.b4b62y; if (x && x.hide && !(j.v > 1795369156206)) delete x.hide; }
+  function edFix(j){ var hz = j && j.items && j.items.skseo; if (hz && hz.es === 'Viaje' && !(j.v > 1795370003164)){ delete hz.es; if (!Object.keys(hz).length) delete j.items.skseo; }
+    var x = j && j.items && j.items.b4b62y; if (x && x.hide && !(j.v > 1795370002764)) delete x.hide; }
   var ED = (function(){ var j = null; try { j = JSON.parse($('snEditsInline').textContent); } catch(e){} j = j && j.items ? j : {v:0, items:{}}; try { var jc = JSON.parse(localStorage.getItem('sn-srv-edits') || 'null'); if (jc && jc.items && jc.v > j.v) j = jc; } catch(e){} if (nxIsAdminDev()) try { var jf = JSON.parse(localStorage.getItem('sn-srv-edits-full') || 'null'); if (jf && jf.items && jf.v >= j.v) j = jf; } catch(e){} NX_EB = j; j = nxEdView(j); j.blocks = j.blocks || []; j.moved = j.moved || {}; edFix(j); return j; })();
   function edState(){ return JSON.stringify({i: ED.items, b: ED.blocks, m: ED.moved, al: ED.album || {}}); }
   function edSetState(x){ var o = typeof x === 'string' ? JSON.parse(x) : x; ED.items = o.i || {}; ED.blocks = o.b || []; ED.moved = o.m || {}; ED.album = o.al || {}; }
@@ -10792,6 +10802,13 @@ html[lang="ru"] .flips .flip .f-front > i{display:none}
 <style>
 html[lang="es"] .gift-card.gift-sasha,html[lang="ru"] .gift-card.gift-naomi{display:none}
 .gift-cards{grid-template-columns:minmax(0,520px)}
+</style>
+<style>
+@media (min-width:761px){
+  .nx-gal{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);overflow:visible;margin-right:0;padding-right:0;scroll-snap-type:none}
+  .nx-gal figure{min-width:0}
+  .nx-gal:has(> figure:nth-child(4)){display:flex;overflow-x:auto;scroll-snap-type:x mandatory;margin-right:calc(var(--gut-r) * -1);padding-right:var(--gut-r)}
+}
 </style>
 
 </body></html>
